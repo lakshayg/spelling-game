@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- prevent favicon.ico request: https://stackoverflow.com/a/13416784/3033441 -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Itim&display=swap"/>
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.css"/>
+</head>
+<body ng-app="myApp" ng-controller="myCtrl" ng-cloak>
+  <md-content>
+    <md-toolbar class="md-hue-2">
+      <md-button style="float:right;" class="md-icon-button">
+        <img ng-click="word_list_sidebar.toggle()" style="padding-top:7px;" src="https://img.icons8.com/doodle/30/000000/menu.png"/>
+      </md-button>
+    </md-toolbar>
+
+    <p>Correct: {{n_correct}} Attempts: {{n_attempts}}</p>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+      <form ng-submit='check()'>
+          <input type="text" style="
+              font-size: 2em;
+              font-family: 'Itim', cursive;
+              padding: 15px;
+              border: 4px solid orange;
+              border-radius: 15px;" ng-model="spelling"/>&nbsp;&nbsp;
+        <button style="padding:10px; font-size:1.5em;">Check</button>
+      </form>
+    </section>
+  </md-content>
+
+  <md-sidenav
+    class="md-sidenav-right"
+    md-component-id='wordList'
+    md-disable-backdrop=""
+    md-whiteframe="4"
+    style="padding-left:1em; padding-right:2em;">
+    <div><br/></div>
+    <table style="width: 100%;">
+      <tr ng-repeat="word in words">
+        <td>{{word}}</td>
+        <td align="right"><a href="" ng-click="deleteWord($index)">x</a></td>
+      </tr>
+    </table>
+    <div>
+      <br/>
+      <form ng-submit="addWord(newWord); newWord=''">
+        <input
+          type="text" ng-model="newWord"
+          style="width:70%; padding:4px; margin:0; float:left;"
+          placeholder="Add new word"/>
+        <button style="padding:4px; float:right;">Add</button>
+      </form>
+    </div>
+  </md-sidenav>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-animate.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-aria.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular-messages.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.12/angular-material.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.11/ngStorage.min.js"></script>
+
+  <script src="/scripts/soundex-code-1.0.5.min.js"></script>
+  <script src="/scripts/metaphone-1.0.6.min.js"></script>
+  <script src="/scripts/levenshtein-edit-distance-2.0.5.min.js"></script>
+  <script src="/scripts/app.js"></script>
+</body>
+</html>
