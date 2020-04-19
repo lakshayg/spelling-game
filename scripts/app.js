@@ -47,6 +47,7 @@ app.controller('myCtrl', ($scope, $http, $localStorage, $mdSidenav) => {
   $scope.check = function() {
     var input = $scope.spelling;
     if (input == undefined || input.length == 0) {
+      speak("The word is " + word());
       return;
     }
     var expected = word().toLowerCase();
