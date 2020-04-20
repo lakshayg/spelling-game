@@ -11,7 +11,7 @@
 <body ng-app="myApp" ng-controller="myCtrl" ng-cloak>
   <md-content>
     <md-toolbar class="md-hue-2">
-      <md-button style="float:right;" class="md-icon-button">
+      <md-button style="float:right;" class="md-icon-button" aria-label="Toggle word list">
         <img ng-click="word_list_sidebar.toggle()" style="padding-top:7px;" src="https://img.icons8.com/doodle/30/000000/menu.png"/>
       </md-button>
     </md-toolbar>
@@ -28,8 +28,13 @@
               font-family: 'Itim', cursive;
               padding: 15px;
               border: 4px solid orange;
-              border-radius: 15px;" ng-model="spelling"/>&nbsp;&nbsp;
-        <button style="padding:10px; font-size:1.5em;">Check</button>
+              border-radius: 15px;" ng-model="spelling"/>
+          <br/>
+          <br/>
+          <center>
+            <button style="padding:10px; font-size:1.5em;">Check</button>&nbsp;
+            <button style="padding:10px; font-size:1.5em;" ng-click="poseQuestion()">Play Again</button>
+          </center>
       </form>
     </section>
   </md-content>
@@ -40,8 +45,14 @@
     md-disable-backdrop=""
     md-whiteframe="4"
     style="padding-left:1em; padding-right:2em;">
-    <div><br/></div>
+    <div><h3>Settings</h3></div>
+    <div>
+      <form ng-submit="">
+        <label><b>Game Length</b></label><input ng-model="game_length" style="width:20%; float:right; text-align:right;" type="text"/>
+      </form>
+    </div>
     <table style="width: 100%;">
+      <tr><th align="left">Words</th><th>&nbsp;</th></tr>
       <tr ng-repeat="word in words">
         <td>{{word}}</td>
         <td align="right"><a href="" ng-click="deleteWord($index)">x</a></td>

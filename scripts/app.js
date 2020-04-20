@@ -1,8 +1,3 @@
-var speak = function(text) {
-  var utterance = new SpeechSynthesisUtterance(text);
-  window.speechSynthesis.speak(utterance);
-};
-
 var app = angular.module('myApp', ['ngStorage', 'ngMaterial', 'ngMessages']);
 app.controller('myCtrl', ($scope, $http, $localStorage, $mdSidenav) => {
   $scope.index = 0;
@@ -11,6 +6,13 @@ app.controller('myCtrl', ($scope, $http, $localStorage, $mdSidenav) => {
   $scope.n_attempts = 0;
   $scope.word_list_sidebar = null;
   $scope.words = null;
+  $scope.last_incorrect_response = "";
+  $scope.game_length = 10;
+
+  var speak = function(text) {
+    var utterance = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utterance);
+  };
 
   var word = function() {
     return $scope.words[$scope.index];
@@ -20,43 +22,60 @@ app.controller('myCtrl', ($scope, $http, $localStorage, $mdSidenav) => {
     $scope.index = ($scope.index + 1) % $scope.words.length;
   };
 
-  var correctResponseSequence = function() {
+  $scope.poseQuestion = function() {
+    speak("Spell; " + word());
+  };
+
+  var correctResponseSequence = function(pose_next_q) {
     $scope.n_correct += 1;
     $scope.spelling = ''; // Clear the text box
     speak("That's correct, good job!");
     incrementWord();
-    speak(word());
-  };
-
-  var provideFeedback = function(input, expected) {
-    var sounds_same = soundexCode(input) == soundexCode(expected) || metaphone(input) == metaphone(expected);
-    var edit_distance = levenshteinEditDistance(input, expected);
-
-    if (sounds_same) {
-      speak("Good try! that does sound like " + expected);
-    } else if (edit_distance <= 1) {
-      speak("Good try! that's almost correct");
+    if (pose_next_q) {
+      $scope.poseQuestion();
     }
   };
 
   var incorrectResponseSequence = function() {
-    provideFeedback($scope.spelling, word());
+    var input = $scope.spelling.toLowerCase();
+    $scope.last_incorrect_response = input;
+    var sounds_same = soundexCode(input) == soundexCode(word()) || metaphone(input) == metaphone(word());
+    var edit_distance = levenshteinEditDistance(input, word());
+    if (sounds_same) {
+      speak("Good try! that does sound like " + word());
+    } else if (edit_distance <= 1) {
+      speak("Good try! that's almost correct");
+    }
     speak("Let's try again, the word is: " + word());
+  };
+
+  var finishGameSequence = function() {
+    if ($scope.n_correct == $scope.n_attempts) {
+      speak("Awesome! you got a perfect score!");
+    } else {
+      speak("Awesome! You scored " + $scope.n_correct + " points!");
+    }
   };
 
   $scope.check = function() {
     var input = $scope.spelling;
     if (input == undefined || input.length == 0) {
-      speak("The word is " + word());
       return;
     }
     var expected = word().toLowerCase();
     if (input.toLowerCase() == expected) {
-      correctResponseSequence();
+      $scope.last_incorrect_response = "";
+      correctResponseSequence($scope.n_attempts < $scope.game_length - 1);
     } else {
+      if (input == $scope.last_incorrect_response) {
+        return;
+      }
       incorrectResponseSequence();
     }
     $scope.n_attempts += 1;
+    if ($scope.n_attempts == $scope.game_length) {
+      finishGameSequence();
+    }
   };
 
   $scope.addWord = function(word) {
@@ -82,6 +101,6 @@ app.controller('myCtrl', ($scope, $http, $localStorage, $mdSidenav) => {
   if (!$scope.words_loaded) {
     speak("No words have been added to the storage, please add some words to continue");
   } else {
-    speak(word());
+    $scope.poseQuestion();
   }
 });
